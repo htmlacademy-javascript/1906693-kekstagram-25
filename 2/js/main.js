@@ -1,14 +1,14 @@
 // за основу взят код отсюда https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Math/random
-
-const GET_RANDOM_INTEGER = function (min, max) {
+const MINIMAL_VALUE = 0;
+function getRandomInteger (min, max) {
   if (min < 0) {
-    min = 0;
+    min = MINIMAL_VALUE;
   } else {
     min = Math.ceil(min);
   }
 
   if (max < 0) {
-    max = 0;
+    max = MINIMAL_VALUE;
   } else {
     max = Math.floor(max);
   }
@@ -22,15 +22,15 @@ const GET_RANDOM_INTEGER = function (min, max) {
   }
 
   return Math.floor(Math.random() * (max - min)) + min;
-};
-GET_RANDOM_INTEGER(-100, -10);
+}
+getRandomInteger(-100, -10);
 
 // за основу взят код отсюда https://www.cyberforum.ru/javascript/thread1165903.html
 
-const CHECK_MAX_STRING_LENGTH = function (stringCheck, maxLength) {
+function checkStringMaxLength (stringCheck, maxLength) {
   if (stringCheck.length > maxLength) {
     return false;
   }
   return true;
-};
-CHECK_MAX_STRING_LENGTH('Привет', 140);
+}
+checkStringMaxLength('Привет', 140);
