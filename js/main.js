@@ -1,13 +1,17 @@
 // за основу взят код отсюда https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 function getRandomInteger (min, max) {
-  const MINIMAL_VALUE = 0;
+  let minimumInteger = Math.ceil(min);
+  let maximumInteger = Math.floor(max);
 
-  if ((min >= MINIMAL_VALUE) && (max >= MINIMAL_VALUE) && (min <= max)) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+  if (min < 0) {
+    minimumInteger = 0;
   }
-  return false;
+
+  if ((max < 0) || (max < min)) {
+    maximumInteger = minimumInteger;
+  }
+
+  return Math.floor(Math.random() * (maximumInteger - minimumInteger + 1)) + minimumInteger;
 }
 getRandomInteger(-100, -10);
 
