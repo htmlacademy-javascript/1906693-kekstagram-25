@@ -90,5 +90,3 @@ const doStructure = () => ({
 });
 
 const mainStructure = Array.from({length: CURRENT_USERS_COUNT}, doStructure);
-
-console.log(mainStructure);
