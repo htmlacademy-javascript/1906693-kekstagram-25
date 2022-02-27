@@ -26,8 +26,6 @@ checkStringMaxLength('Привет', 140);
 
 const CURRENT_USERS_COUNT = 25;
 
-const mainId = Array.from({length: CURRENT_USERS_COUNT}, (v, i) =>  i + 1);
-
 const DESCRIPTIONS = [
   'Тестовое описание № 1.',
   'Тестовое описание № 2.',
@@ -36,26 +34,6 @@ const DESCRIPTIONS = [
   'Тестовое описание № 5.',
   'Тестовое описание № 6.'
 ];
-
-const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
-
-const shuffle = (array) => {
-  let currentIndex = array.length, temporaryValue, randomIndex;
-  while (0 !== currentIndex) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-  return array;
-};
-
-const idComments = [];
-for (let i = 0; i < CURRENT_USERS_COUNT; i++) {
-  idComments.push(i);
-  shuffle(idComments);
-}
 
 const MESSAGES = [
   'Всё отлично!',
@@ -72,22 +50,33 @@ const NAMES = [
   'Мария'
 ];
 
-const createComments = () => ({
-  id: getRandomArrayElement(idComments),
-  avatar: `img/avatar-${getRandomInteger(1, 6)}.svg`,
-  message: getRandomArrayElement(MESSAGES),
-  name: getRandomArrayElement(NAMES)
-});
+const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
 
-const currentComments = Array.from({length: CURRENT_USERS_COUNT}, createComments);
+const currentComments = (count) => {
+  const createComments = [];
+  for (let i = 1; i <= count; i++) {
+    createComments.push({
+      id: i,
+      avatar: `img/avatar-${getRandomInteger(1, 6)}.svg`,
+      message: getRandomArrayElement(MESSAGES),
+      name: getRandomArrayElement(NAMES)
+    });
+  }
+  return createComments;
+};
 
-const doStructure = () => ({
-  id: getRandomArrayElement(mainId),
-  url: `photos/${getRandomInteger(1, CURRENT_USERS_COUNT)}.jpg`,
-  description: getRandomArrayElement(DESCRIPTIONS),
-  likes: getRandomInteger(15, 200),
-  comments: getRandomArrayElement(currentComments),
-});
+const mainStructure = (count) => {
+  const doStructure = [];
+  for (let i = 1; i <= count; i++) {
+    doStructure.push({
+      id: i,
+      url: `photos/${i}.jpg`,
+      description: getRandomArrayElement(DESCRIPTIONS),
+      likes: getRandomInteger(15, 200),
+      comments: currentComments(i)
+    });
+  }
+  return doStructure;
+};
 
-const mainStructure = Array.from({length: CURRENT_USERS_COUNT}, doStructure);
-mainStructure();
+mainStructure(CURRENT_USERS_COUNT);
