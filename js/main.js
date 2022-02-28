@@ -52,31 +52,33 @@ const NAMES = [
 
 const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
 
-const currentComments = (count) => {
-  const createComments = [];
+const createComments = (count) => {
+  const comments = [];
   for (let i = 1; i <= count; i++) {
-    createComments.push({
+    comments.push({
       id: i,
       avatar: `img/avatar-${getRandomInteger(1, 6)}.svg`,
       message: getRandomArrayElement(MESSAGES),
       name: getRandomArrayElement(NAMES)
     });
   }
-  return createComments;
+  return comments;
 };
 
-const mainStructure = (count) => {
-  const doStructure = [];
+const commentsArray = createComments(CURRENT_USERS_COUNT);
+
+const createImages = (count) => {
+  const images = [];
   for (let i = 1; i <= count; i++) {
-    doStructure.push({
+    images.push({
       id: i,
       url: `photos/${i}.jpg`,
       description: getRandomArrayElement(DESCRIPTIONS),
       likes: getRandomInteger(15, 200),
-      comments: currentComments(i)
+      comments: getRandomArrayElement(commentsArray)
     });
   }
-  return doStructure;
+  return images;
 };
 
-mainStructure(CURRENT_USERS_COUNT);
+createImages(CURRENT_USERS_COUNT);
