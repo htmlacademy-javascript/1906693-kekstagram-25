@@ -1,5 +1,5 @@
-import {getRandomInteger} from './get-random-integer.js';
-import {getRandomArrayElement} from './util.js';
+import { getRandomInteger } from './utils/get-random-integer.js';
+import { getRandomArrayElement } from './utils/get-random-array-element.js';
 
 const CURRENT_USERS_COUNT = 25;
 
@@ -43,9 +43,9 @@ const createComments = (count) => {
 const commentsArray = createComments(CURRENT_USERS_COUNT);
 
 const createImages = (count) => {
-  const images = [];
+  const imagesArray = [];
   for (let i = 1; i <= count; i++) {
-    images.push({
+    imagesArray.push({
       id: i,
       url: `photos/${i}.jpg`,
       description: getRandomArrayElement(DESCRIPTIONS),
@@ -53,8 +53,8 @@ const createImages = (count) => {
       comments: getRandomArrayElement(commentsArray)
     });
   }
-  return images;
+  return imagesArray;
 };
 
-const receivedImages = createImages(CURRENT_USERS_COUNT);
-export {receivedImages};
+const images = createImages(CURRENT_USERS_COUNT);
+export { images };
