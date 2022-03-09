@@ -56,5 +56,5 @@ const createImages = (count) => {
   return imagesArray;
 };
 
-const images = createImages(CURRENT_USERS_COUNT);
+const images = () => createImages(CURRENT_USERS_COUNT);
 export { images };
