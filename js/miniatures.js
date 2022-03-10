@@ -15,6 +15,6 @@ similarImages.forEach(({url, likes, comments}) => {
   const imagesElement = similarImagesTemplate.cloneNode(true);
   imagesElement.querySelector('.picture__img').src = url;
   imagesElement.querySelector('.picture__likes').textContent = likes;
-  imagesElement.querySelector('.picture__comments').textContent = Object.keys(comments).length;
+  imagesElement.querySelector('.picture__comments').textContent = comments.length;
   similarListImages.appendChild(imagesElement);
 });

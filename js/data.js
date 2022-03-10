@@ -50,7 +50,7 @@ const createImages = (count) => {
       url: `photos/${i}.jpg`,
       description: getRandomArrayElement(DESCRIPTIONS),
       likes: getRandomInteger(15, 200),
-      comments: getRandomArrayElement(commentsArray)
+      comments: [getRandomArrayElement(commentsArray)]
     });
   }
   return imagesArray;
