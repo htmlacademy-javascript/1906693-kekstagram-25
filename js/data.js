@@ -32,7 +32,7 @@ const createComments = (count) => {
   for (let i = 1; i <= count; i++) {
     comments.push({
       id: i,
-      avatar: `img/avatar-${ getRandomInteger(1, 6) }.svg`,
+      avatar: `img/avatar-${getRandomInteger(1, 6)}.svg`,
       message: getRandomArrayElement(MESSAGES),
       name: getRandomArrayElement(NAMES)
     });
@@ -47,7 +47,7 @@ const createImages = () => {
   for (let i = 1; i <= CURRENT_USERS_COUNT; i++) {
     imagesArray.push({
       id: i,
-      url: `photos/${ i }.jpg`,
+      url: `photos/${i}.jpg`,
       description: getRandomArrayElement(DESCRIPTIONS),
       likes: getRandomInteger(15, 200),
       comments: [getRandomArrayElement(commentsArray)]
