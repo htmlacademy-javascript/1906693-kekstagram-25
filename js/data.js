@@ -42,19 +42,18 @@ const createComments = (count) => {
 
 const commentsArray = createComments(CURRENT_USERS_COUNT);
 
-const createImages = (count) => {
+const createImages = () => {
   const imagesArray = [];
-  for (let i = 1; i <= count; i++) {
+  for (let i = 1; i <= CURRENT_USERS_COUNT; i++) {
     imagesArray.push({
       id: i,
       url: `photos/${i}.jpg`,
       description: getRandomArrayElement(DESCRIPTIONS),
       likes: getRandomInteger(15, 200),
-      comments: getRandomArrayElement(commentsArray)
+      comments: [getRandomArrayElement(commentsArray)]
     });
   }
   return imagesArray;
 };
 
-const images = createImages(CURRENT_USERS_COUNT);
-export { images };
+export { createImages };
