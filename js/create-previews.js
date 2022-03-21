@@ -1,5 +1,4 @@
 import { bigPicture } from './big-picture.js';
-import { openBigPicture } from './big-picture.js';
 
 const similarImagesBlock = document.querySelector('.pictures');
 const similarImagesTemplate = document.querySelector('#picture').content.querySelector('.picture');
@@ -37,8 +36,6 @@ const createPreviews = (images) => {
       bigPicture.querySelector('img').src = matchingPreviewBigPicture.url;
       bigPicture.querySelector('.likes-count').textContent = matchingPreviewBigPicture.likes;
 
-      openBigPicture();
-
       bigPicture.querySelector('.social__comment-count').classList.add('hidden');
       bigPicture.querySelector('.comments-loader').classList.add('hidden');
     });
@@ -49,4 +46,4 @@ const createPreviews = (images) => {
   similarImagesBlock.appendChild(similarImagesFragment);
 };
 
-export { createPreviews };
+export { createPreviews, similarImagesBlock };
