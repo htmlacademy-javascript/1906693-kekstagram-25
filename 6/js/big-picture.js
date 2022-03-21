@@ -1,3 +1,5 @@
+import { similarImagesBlock } from './create-previews.js';
+
 const bigPicture = document.querySelector('.big-picture');
 
 const openBigPicture = () => {
@@ -11,6 +13,14 @@ const closeBigPicture = () => {
 };
 
 const initBigPicture = () => {
+  similarImagesBlock.addEventListener('click', (event) => {
+
+    if (event.target.className !== 'picture__img') {
+      return;
+    }
+
+    openBigPicture();
+  });
 
   bigPicture.querySelector('.big-picture__cancel').addEventListener('click', () => {
     closeBigPicture();
@@ -24,4 +34,4 @@ const initBigPicture = () => {
   });
 };
 
-export { bigPicture, openBigPicture, initBigPicture };
+export { bigPicture, initBigPicture };
