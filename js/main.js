@@ -4,4 +4,4 @@ import { initBigPicture } from './big-picture.js';
 
 const images = createImages();
 createPreviews(images);
-initBigPicture();
+initBigPicture(images);
