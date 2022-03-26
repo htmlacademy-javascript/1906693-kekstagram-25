@@ -4,11 +4,12 @@ const similarImagesTemplate = document.querySelector('#picture').content.querySe
 const createPreviews = (images) => {
   const similarImagesFragment = document.createDocumentFragment();
 
-  images.forEach(({ url, likes, comments }) => {
+  images.forEach(({ url, likes, comments, id }) => {
     const imagesElement = similarImagesTemplate.cloneNode(true);
     imagesElement.querySelector('.picture__img').src = url;
     imagesElement.querySelector('.picture__likes').textContent = likes;
     imagesElement.querySelector('.picture__comments').textContent = comments.length;
+    imagesElement.querySelector('.picture__img').setAttribute('data-id', id);
     similarImagesFragment.appendChild(imagesElement);
   });
 
