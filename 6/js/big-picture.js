@@ -1,6 +1,7 @@
 const pictures = document.querySelector('.pictures');
 const bigPicture = document.querySelector('.big-picture');
 
+
 const openBigPicture = () => {
   bigPicture.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
@@ -11,9 +12,8 @@ const closeBigPicture = () => {
   document.querySelector('body').classList.remove('modal-open');
 };
 
-const fillBigPicture = (id) => {
-  const idBigPreview = event.target.closest('.picture__img').getAttribute('data-id');
-  const matchingPreviewBigPicture =  id.find((photo) => String(photo.id) === idBigPreview);
+const fillBigPicture = (id, images) => {
+  const matchingPreviewBigPicture =  images.find((photo) => String(photo.id) === id);
   const socialComments = bigPicture.querySelector('.social__comments');
   const templateComment = document.querySelector('#comment').content.querySelector('.social__comment');
   const similarPictureComment = document.createDocumentFragment();
@@ -38,14 +38,16 @@ const fillBigPicture = (id) => {
   bigPicture.querySelector('.comments-loader').classList.add('hidden');
 };
 
-const initBigPicture = (id) => {
+const initBigPicture = (images) => {
   pictures.addEventListener('click', (event) => {
 
     if (event.target.className !== 'picture__img') {
       return;
     }
 
-    fillBigPicture(id);
+    const idBigPreview = event.target.closest('.picture__img').getAttribute('data-id');
+
+    fillBigPicture(idBigPreview, images);
 
     openBigPicture();
   });
