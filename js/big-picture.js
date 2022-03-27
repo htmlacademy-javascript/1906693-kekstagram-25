@@ -1,15 +1,27 @@
+import { isEscapeKey } from './utils/is-escape-key.js';
+
 const pictures = document.querySelector('.pictures');
 const bigPicture = document.querySelector('.big-picture');
 
+const onBigPictureEscKeydown = (evt) => {
+  if (isEscapeKey(evt)) {
+    evt.preventDefault();
+    bigPicture.classList.add('hidden');
+    document.querySelector('body').classList.remove('modal-open');
+    document.removeEventListener('keydown', onBigPictureEscKeydown);
+  }
+};
 
 const openBigPicture = () => {
   bigPicture.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
+  document.addEventListener('keydown', onBigPictureEscKeydown);
 };
 
 const closeBigPicture = () => {
   bigPicture.classList.add('hidden');
   document.querySelector('body').classList.remove('modal-open');
+  document.removeEventListener('keydown', onBigPictureEscKeydown);
 };
 
 const fillBigPicture = (id, images) => {
@@ -38,29 +50,33 @@ const fillBigPicture = (id, images) => {
   bigPicture.querySelector('.comments-loader').classList.add('hidden');
 };
 
-const initBigPicture = (images) => {
-  pictures.addEventListener('click', (event) => {
+const clearBigPicture = () => {
+  bigPicture.querySelector('.social__comments').innerHTML = '';
+  bigPicture.querySelector('.social__caption').innerHTML = '';
+  bigPicture.querySelector('.big-picture__img').querySelector('img').alt = '';
+  bigPicture.querySelector('img').src = '';
+  bigPicture.querySelector('.likes-count').innerHTML = '';
+  bigPicture.querySelector('.comments-count').innerHTML = '';
+  bigPicture.querySelector('.social__comment-count').classList.add('hidden');
+  bigPicture.querySelector('.comments-loader').classList.add('hidden');
+};
 
-    if (event.target.className !== 'picture__img') {
+const initBigPicture = (images) => {
+  pictures.addEventListener('click', (evt) => {
+
+    if (evt.target.className !== 'picture__img') {
       return;
     }
 
-    const idBigPreview = event.target.closest('.picture__img').getAttribute('data-id');
+    const idBigPreview = evt.target.closest('.picture__img').getAttribute('data-id');
 
     fillBigPicture(idBigPreview, images);
-
     openBigPicture();
   });
 
   bigPicture.querySelector('.big-picture__cancel').addEventListener('click', () => {
+    clearBigPicture();
     closeBigPicture();
-  });
-
-  document.addEventListener('keydown', (evt) => {
-    if (evt.key === 'Escape') {
-      evt.preventDefault();
-      closeBigPicture();
-    }
   });
 };
 
