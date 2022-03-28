@@ -15,8 +15,9 @@ const clearDataImgUpload = () => {
 };
 
 const onimgUploadEscKeydown = (evt) => {
-  if (textDescriptionNewImage === document.activeElement || textHashtagsNewImage === document.activeElement) {
-    return evt;
+  if (textDescriptionNewImage === document.activeElement ||
+      textHashtagsNewImage === document.activeElement) {
+    return;
   }
 
   if (isEscapeKey(evt)) {
@@ -40,17 +41,6 @@ const closeImgUpload = () => {
   document.removeEventListener('keydown', onimgUploadEscKeydown);
 };
 
-const initImgUpload = () => {
-  uploadFileNewImage.addEventListener('click', () => {
-    openImgUpload();
-  });
-
-  imgUploadOverlay.querySelector('.img-upload__cancel').addEventListener('click', () => {
-    closeImgUpload();
-    clearDataImgUpload();
-  });
-};
-
 const pristine = new Pristine(imgUploadForm, {
   classTo: 'img-upload__text',
   errorClass: 'img-upload__text--error',
@@ -60,47 +50,66 @@ const pristine = new Pristine(imgUploadForm, {
   errorTextClass: 'img-upload-error'
 });
 
-pristine.addValidator(textHashtagsNewImage, () => {
-  const arrayTextHashtags = textHashtagsNewImage.value.split(' ');
-  for (const textHashtags of arrayTextHashtags) {
-
-    if (!re.test(textHashtags) && textHashtags !== '') {
-      return false;
-    }
-  }
-  return true;
-},
-'Хэш-тег начинается с символа # (решётка). Строка после решётки должна состоять из букв и чисел и не может содержать пробелы, спецсимволы');
-
-pristine.addValidator(textHashtagsNewImage, () => {
-  const arrayTextHashtags = textHashtagsNewImage.value.split(' ');
-  for (let i = 0; i < arrayTextHashtags.length; i++) {
-    for (let j = i + 1; j < arrayTextHashtags.length; j++) {
-      if (arrayTextHashtags[i].toLowerCase() === arrayTextHashtags[j].toLowerCase() && arrayTextHashtags[i] !== '') {
+const initFormValidation = () => {
+  pristine.addValidator(textHashtagsNewImage, () => {
+    const arrayTextHashtags = textHashtagsNewImage.value.split(' ');
+    for (const textHashtags of arrayTextHashtags) {
+      if (!re.test(textHashtags) &&
+          textHashtags !== '') {
         return false;
       }
     }
-  }
-  return true;
-},
-'Один и тот же хэш-тег не может быть использован дважды');
+    return true;
+  },
+  'Хэш-тег начинается с символа # (решётка). Строка после решётки должна состоять из букв и чисел и не может содержать пробелы, спецсимволы');
 
-pristine.addValidator(textHashtagsNewImage, () => {
-  const arrayTextHashtags = textHashtagsNewImage.value.split(' ');
-  if (arrayTextHashtags.length > 5) {
-    return false;
-  }
-  return true;
-},
-'Нельзя указать больше пяти хэш-тегов');
+  pristine.addValidator(textHashtagsNewImage, () => {
+    const arrayTextHashtags = textHashtagsNewImage.value.split(' ');
+    for (let i = 0; i < arrayTextHashtags.length; i++) {
+      for (let j = i + 1; j < arrayTextHashtags.length; j++) {
+        if (arrayTextHashtags[i].toLowerCase() === arrayTextHashtags[j].toLowerCase() &&
+            arrayTextHashtags[i] !== '') {
+          return false;
+        }
+      }
+    }
+    return true;
+  },
+  'Один и тот же хэш-тег не может быть использован дважды');
 
-imgUploadForm.addEventListener('submit', (evt) => {
+  pristine.addValidator(textHashtagsNewImage, () => {
+    const arrayTextHashtags = textHashtagsNewImage.value.split(' ');
+    if (arrayTextHashtags.length > 5) {
+      return false;
+    }
+    return true;
+  },
+  'Нельзя указать больше пяти хэш-тегов');
+};
+
+const doPristine = (evt) => {
   evt.preventDefault();
   const isValid = pristine.validate();
   if (isValid) {
     imgUploadForm.submit();
   }
   return evt;
-});
+};
+
+const initImgUpload = () => {
+  uploadFileNewImage.addEventListener('click', () => {
+    openImgUpload();
+    initFormValidation();
+
+    imgUploadForm.addEventListener('submit', (evt) => {
+      doPristine(evt);
+    });
+  });
+
+  imgUploadOverlay.querySelector('.img-upload__cancel').addEventListener('click', () => {
+    closeImgUpload();
+    clearDataImgUpload();
+  });
+};
 
 export { initImgUpload };
