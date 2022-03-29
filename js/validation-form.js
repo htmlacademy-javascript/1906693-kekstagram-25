@@ -87,13 +87,11 @@ const initFormValidation = () => {
   'Нельзя указать больше пяти хэш-тегов');
 };
 
-const doPristine = (evt) => {
-  evt.preventDefault();
+const checkPristine = () => {
   const isValid = pristine.validate();
   if (isValid) {
     imgUploadForm.submit();
   }
-  return evt;
 };
 
 const initImgUpload = () => {
@@ -102,7 +100,8 @@ const initImgUpload = () => {
     initFormValidation();
 
     imgUploadForm.addEventListener('submit', (evt) => {
-      doPristine(evt);
+      evt.preventDefault();
+      checkPristine();
     });
   });
 
