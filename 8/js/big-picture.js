@@ -80,21 +80,23 @@ const fillComments = () => {
     const commentCheck = () => {
       сommentCounter += COMMENT_STEP;
       if (сommentCounter <= socialCommentsElements.length) {
-        for (let i = 0; i < socialCommentsElements.length; i++) {
-          socialCommentsElements[i].style.display = 'none';
-        }
-        for (let i = 0; i < сommentCounter; i++) {
+        for (let i = сommentCounter - COMMENT_STEP; i < сommentCounter; i++) {
           socialCommentsElements[i].style.display = '';
         }
         bigPicture.querySelector('.social__comment-count').innerHTML = `${сommentCounter} из <span class="comments-count">${socialCommentsElements.length}</span> комментариев`;
       }
 
       if (сommentCounter >= socialCommentsElements.length) {
-        for (let i = 0; i < socialCommentsElements.length; i++) {
+
+        for (let i = сommentCounter - COMMENT_STEP; i < socialCommentsElements.length; i++) {
           socialCommentsElements[i].style.display = '';
         }
+
         bigPicture.querySelector('.comments-loader').classList.add('hidden');
         bigPicture.querySelector('.comments-loader').removeEventListener('click', commentCheck);
+      }
+
+      if (сommentCounter > socialCommentsElements.length) {
         bigPicture.querySelector('.social__comment-count').innerHTML = `${socialCommentsElements.length} из <span class="comments-count">${socialCommentsElements.length}</span> комментариев`;
       }
     };
