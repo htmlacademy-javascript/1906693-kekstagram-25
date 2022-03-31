@@ -28,7 +28,7 @@ const NAMES = [
 ];
 
 let j = 1;
-const createComments = () => ({
+const createComment = () => ({
   id: j++,
   avatar: `img/avatar-${getRandomInteger(1, 6)}.svg`,
   message: getRandomArrayElement(MESSAGES),
@@ -43,7 +43,7 @@ const createImages = () => {
       url: `photos/${i}.jpg`,
       description: getRandomArrayElement(DESCRIPTIONS),
       likes: getRandomInteger(15, 200),
-      comments: Array.from({length: getRandomInteger(1, 20)}, createComments)
+      comments: Array.from({length: getRandomInteger(1, 20)}, createComment)
     });
   }
   return imagesArray;
