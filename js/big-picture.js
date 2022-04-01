@@ -14,26 +14,35 @@ const clearBigPicture = () => {
   bigPicture.querySelector('.comments-loader').classList.add('hidden');
 };
 
-const onBigPictureEscKeydown = (evt) => {
+const closeBigPicture = () => {
+  bigPicture.classList.add('hidden');
+  document.querySelector('body').classList.remove('modal-open');
+};
+
+const onBigPictureCancelClick = () => {
+  clearBigPicture();
+  closeBigPicture();
+  bigPicture.querySelector('.big-picture__cancel').removeEventListener('click', onBigPictureCancelClick);
+  document.removeEventListener('keydown', onBigPictureEscKeydown);
+};
+
+// пришлось отойти от стрелочной функции. Eslint выдавал ошибку no-use-before-define
+
+function onBigPictureEscKeydown(evt) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
     clearBigPicture();
     bigPicture.classList.add('hidden');
     document.querySelector('body').classList.remove('modal-open');
     document.removeEventListener('keydown', onBigPictureEscKeydown);
+    bigPicture.querySelector('.big-picture__cancel').removeEventListener('click', onBigPictureCancelClick);
   }
-};
+}
 
 const openBigPicture = () => {
   bigPicture.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
   document.addEventListener('keydown', onBigPictureEscKeydown);
-};
-
-const closeBigPicture = () => {
-  bigPicture.classList.add('hidden');
-  document.querySelector('body').classList.remove('modal-open');
-  document.removeEventListener('keydown', onBigPictureEscKeydown);
 };
 
 const fillBigPicture = (id, images) => {
@@ -106,23 +115,15 @@ const fillComments = () => {
 };
 
 const initBigPicture = (images) => {
-
   pictures.addEventListener('click', (evt) => {
-
     if (evt.target.className !== 'picture__img') {
       return;
     }
-
     const idBigPreview = evt.target.closest('.picture__img').getAttribute('data-id');
-
     fillBigPicture(idBigPreview, images);
     fillComments();
     openBigPicture();
-
-    bigPicture.querySelector('.big-picture__cancel').addEventListener('click', () => {
-      clearBigPicture();
-      closeBigPicture();
-    });
+    bigPicture.querySelector('.big-picture__cancel').addEventListener('click', onBigPictureCancelClick);
   });
 };
 
