@@ -19,14 +19,12 @@ const closeBigPicture = () => {
   document.querySelector('body').classList.remove('modal-open');
 };
 
-const onBigPictureCancelClick = () => {
+const onBigPictureCancel = () => {
   clearBigPicture();
   closeBigPicture();
-  bigPicture.querySelector('.big-picture__cancel').removeEventListener('click', onBigPictureCancelClick);
+  bigPicture.querySelector('.big-picture__cancel').removeEventListener('click', onBigPictureCancel);
   document.removeEventListener('keydown', onBigPictureEscKeydown);
 };
-
-// пришлось отойти от стрелочной функции. Eslint выдавал ошибку no-use-before-define
 
 function onBigPictureEscKeydown(evt) {
   if (isEscapeKey(evt)) {
@@ -35,7 +33,7 @@ function onBigPictureEscKeydown(evt) {
     bigPicture.classList.add('hidden');
     document.querySelector('body').classList.remove('modal-open');
     document.removeEventListener('keydown', onBigPictureEscKeydown);
-    bigPicture.querySelector('.big-picture__cancel').removeEventListener('click', onBigPictureCancelClick);
+    bigPicture.querySelector('.big-picture__cancel').removeEventListener('click', onBigPictureCancel);
   }
 }
 
@@ -123,7 +121,7 @@ const initBigPicture = (images) => {
     fillBigPicture(idBigPreview, images);
     fillComments();
     openBigPicture();
-    bigPicture.querySelector('.big-picture__cancel').addEventListener('click', onBigPictureCancelClick);
+    bigPicture.querySelector('.big-picture__cancel').addEventListener('click', onBigPictureCancel);
   });
 };
 
