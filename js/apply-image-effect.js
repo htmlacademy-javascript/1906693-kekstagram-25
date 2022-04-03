@@ -33,7 +33,7 @@ const chooseSelectionEffect = () => {
   }
 };
 
-const uiSlider = () => {
+const initUiSlider = () => {
   noUiSlider.create(effectLevelSlider, {
     range: {
       min: 0,
@@ -43,10 +43,6 @@ const uiSlider = () => {
     step: 1,
     connect: 'lower',
   });
-};
-
-const effectSlider = () => {
-  uiSlider();
   effectLevelSlider.noUiSlider.on('update', () => {
     effectLevelValue.value = effectLevelSlider.noUiSlider.get();
     chooseSelectionEffect();
@@ -115,7 +111,7 @@ const checkSelectionEffect = (evt) => {
 const initImageEffect = () => {
   effectLevelSlider.classList.add('hidden');
   effectsList.addEventListener('change', initSelectionEffect);
-  effectSlider();
+  initUiSlider();
   effectsList.addEventListener('change', checkSelectionEffect);
 };
 
