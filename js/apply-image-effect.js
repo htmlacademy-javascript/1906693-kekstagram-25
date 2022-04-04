@@ -7,6 +7,7 @@ const imgUploadPreview = document.querySelector('.img-upload__preview').querySel
 const scaleControlValue = document.querySelector('.scale__control--value');
 
 const initSelectionEffect = (evt) => {
+  imgUploadPreview.removeAttribute('style');
   if (evt.target.matches('input[type="radio"]')) {
     imgUploadPreview.className = '';
     imgUploadPreview.classList.add(`effects__preview--${evt.target.value}`);
@@ -18,8 +19,6 @@ const initSelectionEffect = (evt) => {
 };
 
 const chooseSelectionEffect = () => {
-  imgUploadPreview.removeAttribute('style');
-
   if (imgUploadPreview.className === 'effects__preview--chrome') {
     imgUploadPreview.style.filter = `grayscale(${effectLevelValue.value})`;
   } else if (imgUploadPreview.className === 'effects__preview--sepia') {
