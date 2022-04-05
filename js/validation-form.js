@@ -1,7 +1,7 @@
 import { isEscapeKey } from './utils/is-escape-key.js';
 import { initResizingImage, deleteResizingImage, scaleControlDefaultValue } from './resizing-image.js';
 import { initImageEffect, initSelectionEffect, checkSelectionEffect } from './apply-image-effect.js';
-import { showAlert } from './utils/show-alert.js';
+import { sendData } from './send-data-api.js';
 
 const imgUpload = document.querySelector('.img-upload');
 const imgUploadOverlay = imgUpload.querySelector('.img-upload__overlay');
@@ -22,46 +22,66 @@ const error = document.querySelector('#error').content.querySelector('.error');
 const errorButton = document.querySelector('#error').content.querySelector('.error__button');
 const errorInner = document.querySelector('#error').content.querySelector('.error__inner');
 
-document.body.append(success);
-success.classList.add('hidden');
+const onCloseSuccessButton = () => {
+  success.classList.add('hidden');
+  successButton.removeEventListener('click', onCloseSuccessButton);
+  document.removeEventListener('click', onCloseSuccessClickOutside);
+  document.removeEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
+};
 
-const closeSuccessClickButton = () => {
-  successButton.addEventListener('click', () => {
+function onCloseSuccessClickOutside(evt) {
+  if (!successInner.contains(evt.target)) {
     success.classList.add('hidden');
-  });
-};
-
-const closeSuccessClickOutside = () => {
-  document.addEventListener('click', (evt) => {
-    if (!successInner.contains(evt.target)) {
-      success.classList.add('hidden');
-    }
-  });
-};
-
-document.body.append(error);
-error.classList.add('hidden');
-
-const closeErrorClickButton = () => {
-  errorButton.addEventListener('click', () => {
-    error.classList.add('hidden');
-  });
-};
-
-const closeErrorClickOutside = () => {
-  document.addEventListener('click', (evt) => {
-    if (!errorInner.contains(evt.target)) {
-      error.classList.add('hidden');
-    }
-  });
-};
-
-document.addEventListener('keydown', (evt) => {
-  if(evt.key === 'Escape') {
-    success.classList.add('hidden');
-    error.classList.add('hidden');
+    successButton.removeEventListener('click', onCloseSuccessButton);
+    document.removeEventListener('click', onCloseSuccessClickOutside);
+    document.removeEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
   }
-});
+}
+
+const initSuccessImgUpload = () => {
+  document.removeEventListener('keydown', onImgUploadEscKeydown);
+  document.body.append(success);
+  successButton.addEventListener('click', onCloseSuccessButton);
+  document.addEventListener('click', onCloseSuccessClickOutside);
+  document.addEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
+};
+
+const onCloseErrorButton = () => {
+  error.classList.add('hidden');
+  errorButton.removeEventListener('click', onCloseErrorButton);
+  document.removeEventListener('click', onCloseErrorClickOutside);
+  document.removeEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
+};
+
+function onCloseErrorClickOutside(evt) {
+  if (!errorInner.contains(evt.target)) {
+    error.classList.add('hidden');
+    errorButton.removeEventListener('click', onCloseErrorButton);
+    document.removeEventListener('click', onCloseErrorClickOutside);
+    document.removeEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
+  }
+}
+
+const initErrorImgUpload = () => {
+  document.removeEventListener('keydown', onImgUploadEscKeydown);
+  document.body.append(error);
+  errorButton.addEventListener('click', onCloseErrorButton);
+  document.addEventListener('click', onCloseErrorClickOutside);
+  document.addEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
+};
+
+function onSuccessErrorImgUploadEscKeydown(evt) {
+  if (isEscapeKey(evt)) {
+    evt.preventDefault();
+    success.classList.add('hidden');
+    error.classList.add('hidden');
+    successButton.removeEventListener('click', onCloseSuccessButton);
+    document.removeEventListener('click', onCloseSuccessClickOutside);
+    errorButton.removeEventListener('click', onCloseErrorButton);
+    document.removeEventListener('click', onCloseErrorClickOutside);
+    document.removeEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
+  }
+}
 
 const clearDataImgUpload = () => {
   imgUpload.querySelector('.img-upload__input').value = '';
@@ -84,7 +104,6 @@ const closeImgUpload = () => {
   document.querySelector('body').classList.remove('modal-open');
   deleteResizingImage();
   clearDataImgUpload();
-  imgUploadPreview.removeAttribute('class');
 };
 
 const blockSubmitButton = () => {
@@ -97,35 +116,27 @@ const unblockSubmitButton = () => {
   submitButton.textContent = 'Опубликовать';
 };
 
-const onImgUploadFormSubmit = () => {
+const initImgUploadFormSubmit = (onSuccess) => {
   imgUploadForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
     const isValid = pristine.validate();
     if (isValid) {
       blockSubmitButton();
-      const formData = new FormData(evt.target);
-      fetch(
-        'https://25.javascript.pages.academy/kekstagram',
-        {
-          method: 'POST',
-          body: formData
-        },
-      ).then((response) => {
-        if (response.ok) {
-          closeImgUpload();
+      sendData(
+        () => {
+          onSuccess();
           unblockSubmitButton();
           success.classList.remove('hidden');
-          closeSuccessClickButton();
-          closeSuccessClickOutside();
-        } else {
-          showAlert('Не удалось загрузить изображения. Пожалуйста, обновите страницу');
+          initSuccessImgUpload();
+        },
+        () => {
+          onSuccess();
+          unblockSubmitButton();
           error.classList.remove('hidden');
-          closeErrorClickButton();
-          closeErrorClickOutside();
-        }
-      }).catch(() => {
-        showAlert('Не удалось загрузить изображения. Пожалуйста, обновите страницу');
-      });
+          initErrorImgUpload();
+        },
+        new FormData(evt.target),
+      );
     }
   });
 };
@@ -133,13 +144,13 @@ const onImgUploadFormSubmit = () => {
 const onUploadPictureCancel = () => {
   closeImgUpload();
   imgUploadOverlay.querySelector('.img-upload__cancel').removeEventListener('click', onUploadPictureCancel);
-  document.removeEventListener('keydown', onimgUploadEscKeydown);
+  document.removeEventListener('keydown', onImgUploadEscKeydown);
   imgUploadPreview.className = '';
   effectsList.removeEventListener('change', initSelectionEffect);
   effectsList.removeEventListener('change', checkSelectionEffect);
 };
 
-function onimgUploadEscKeydown(evt) {
+function onImgUploadEscKeydown(evt) {
   if (textDescriptionNewImage === document.activeElement ||
       textHashtagsNewImage === document.activeElement) {
     return;
@@ -147,23 +158,20 @@ function onimgUploadEscKeydown(evt) {
 
   if (isEscapeKey(evt)) {
     evt.preventDefault();
-    imgUploadOverlay.classList.add('hidden');
-    document.querySelector('body').classList.remove('modal-open');
-    document.removeEventListener('keydown', onimgUploadEscKeydown);
-    deleteResizingImage();
-    clearDataImgUpload();
+    closeImgUpload();
     imgUploadOverlay.querySelector('.img-upload__cancel').removeEventListener('click', onUploadPictureCancel);
+    document.removeEventListener('keydown', onImgUploadEscKeydown);
     imgUploadPreview.className = '';
     effectsList.removeEventListener('change', initSelectionEffect);
     effectsList.removeEventListener('change', checkSelectionEffect);
-    success.classList.add('hidden');
+    document.getElementById('effect-none').checked = true;
   }
 }
 
 const openImgUpload = () => {
   imgUploadOverlay.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
-  document.addEventListener('keydown', onimgUploadEscKeydown);
+  document.addEventListener('keydown', onImgUploadEscKeydown);
 };
 
 const initFormValidation = () => {
@@ -214,4 +222,4 @@ const initImgUpload = () => {
   });
 };
 
-export { initImgUpload, onImgUploadFormSubmit};
+export { initImgUpload, initImgUploadFormSubmit, closeImgUpload };
