@@ -1,10 +1,12 @@
-import { createImages } from './data.js';
 import { createPreviews } from './create-previews.js';
 import { initBigPicture } from './big-picture.js';
-import { initImgUpload } from './validation-form.js';
+import { getData } from './get-data-api.js';
+import { initImgUpload, initImgUploadFormSubmit } from './validation-form.js';
 
-const images = createImages();
+getData((images) => {
+  createPreviews(images);
+  initBigPicture(images);
+});
 
-createPreviews(images);
-initBigPicture(images);
 initImgUpload();
+initImgUploadFormSubmit();
