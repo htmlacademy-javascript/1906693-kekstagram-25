@@ -26,7 +26,7 @@ const onCloseSuccessButton = () => {
   success.classList.add('hidden');
   successButton.removeEventListener('click', onCloseSuccessButton);
   document.removeEventListener('click', onCloseSuccessClickOutside);
-  document.removeEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
+  document.removeEventListener('keydown', onImgUploadEscKeydown);
 };
 
 function onCloseSuccessClickOutside(evt) {
@@ -34,23 +34,23 @@ function onCloseSuccessClickOutside(evt) {
     success.classList.add('hidden');
     successButton.removeEventListener('click', onCloseSuccessButton);
     document.removeEventListener('click', onCloseSuccessClickOutside);
-    document.removeEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
+    document.removeEventListener('keydown', onImgUploadEscKeydown);
   }
 }
 
 const initSuccessImgUpload = () => {
-  document.removeEventListener('keydown', onImgUploadEscKeydown);
+  document.removeEventListener('keydown', onUploadPictureEscKeydown);
   document.body.append(success);
   successButton.addEventListener('click', onCloseSuccessButton);
   document.addEventListener('click', onCloseSuccessClickOutside);
-  document.addEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
+  document.addEventListener('keydown', onImgUploadEscKeydown);
 };
 
 const onCloseErrorButton = () => {
   error.classList.add('hidden');
   errorButton.removeEventListener('click', onCloseErrorButton);
   document.removeEventListener('click', onCloseErrorClickOutside);
-  document.removeEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
+  document.removeEventListener('keydown', onImgUploadEscKeydown);
 };
 
 function onCloseErrorClickOutside(evt) {
@@ -58,19 +58,19 @@ function onCloseErrorClickOutside(evt) {
     error.classList.add('hidden');
     errorButton.removeEventListener('click', onCloseErrorButton);
     document.removeEventListener('click', onCloseErrorClickOutside);
-    document.removeEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
+    document.removeEventListener('keydown', onImgUploadEscKeydown);
   }
 }
 
 const initErrorImgUpload = () => {
-  document.removeEventListener('keydown', onImgUploadEscKeydown);
+  document.removeEventListener('keydown', onUploadPictureEscKeydown);
   document.body.append(error);
   errorButton.addEventListener('click', onCloseErrorButton);
   document.addEventListener('click', onCloseErrorClickOutside);
-  document.addEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
+  document.addEventListener('keydown', onImgUploadEscKeydown);
 };
 
-function onSuccessErrorImgUploadEscKeydown(evt) {
+function onImgUploadEscKeydown(evt) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
     success.classList.add('hidden');
@@ -79,7 +79,7 @@ function onSuccessErrorImgUploadEscKeydown(evt) {
     document.removeEventListener('click', onCloseSuccessClickOutside);
     errorButton.removeEventListener('click', onCloseErrorButton);
     document.removeEventListener('click', onCloseErrorClickOutside);
-    document.removeEventListener('keydown', onSuccessErrorImgUploadEscKeydown);
+    document.removeEventListener('keydown', onImgUploadEscKeydown);
   }
 }
 
@@ -116,41 +116,16 @@ const unblockSubmitButton = () => {
   submitButton.textContent = 'Опубликовать';
 };
 
-const initImgUploadFormSubmit = (onSuccess) => {
-  imgUploadForm.addEventListener('submit', (evt) => {
-    evt.preventDefault();
-    const isValid = pristine.validate();
-    if (isValid) {
-      blockSubmitButton();
-      sendData(
-        () => {
-          onSuccess();
-          unblockSubmitButton();
-          success.classList.remove('hidden');
-          initSuccessImgUpload();
-        },
-        () => {
-          onSuccess();
-          unblockSubmitButton();
-          error.classList.remove('hidden');
-          initErrorImgUpload();
-        },
-        new FormData(evt.target),
-      );
-    }
-  });
-};
-
 const onUploadPictureCancel = () => {
   closeImgUpload();
   imgUploadOverlay.querySelector('.img-upload__cancel').removeEventListener('click', onUploadPictureCancel);
-  document.removeEventListener('keydown', onImgUploadEscKeydown);
+  document.removeEventListener('keydown', onUploadPictureEscKeydown);
   imgUploadPreview.className = '';
   effectsList.removeEventListener('change', initSelectionEffect);
   effectsList.removeEventListener('change', checkSelectionEffect);
 };
 
-function onImgUploadEscKeydown(evt) {
+function onUploadPictureEscKeydown(evt) {
   if (textDescriptionNewImage === document.activeElement ||
       textHashtagsNewImage === document.activeElement) {
     return;
@@ -160,7 +135,7 @@ function onImgUploadEscKeydown(evt) {
     evt.preventDefault();
     closeImgUpload();
     imgUploadOverlay.querySelector('.img-upload__cancel').removeEventListener('click', onUploadPictureCancel);
-    document.removeEventListener('keydown', onImgUploadEscKeydown);
+    document.removeEventListener('keydown', onUploadPictureEscKeydown);
     imgUploadPreview.className = '';
     effectsList.removeEventListener('change', initSelectionEffect);
     effectsList.removeEventListener('change', checkSelectionEffect);
@@ -168,10 +143,37 @@ function onImgUploadEscKeydown(evt) {
   }
 }
 
+const initImgUploadFormSubmit = () => {
+  imgUploadForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    const isValid = pristine.validate();
+    if (isValid) {
+      blockSubmitButton();
+      sendData(
+        () => {
+          unblockSubmitButton();
+          onUploadPictureCancel();
+          success.classList.remove('hidden');
+          initSuccessImgUpload();
+          document.getElementById('effect-none').checked = true;
+        },
+        () => {
+          unblockSubmitButton();
+          onUploadPictureCancel();
+          error.classList.remove('hidden');
+          initErrorImgUpload();
+          document.getElementById('effect-none').checked = true;
+        },
+        new FormData(evt.target),
+      );
+    }
+  });
+};
+
 const openImgUpload = () => {
   imgUploadOverlay.classList.remove('hidden');
   document.querySelector('body').classList.add('modal-open');
-  document.addEventListener('keydown', onImgUploadEscKeydown);
+  document.addEventListener('keydown', onUploadPictureEscKeydown);
 };
 
 const initFormValidation = () => {
@@ -222,4 +224,4 @@ const initImgUpload = () => {
   });
 };
 
-export { initImgUpload, initImgUploadFormSubmit, closeImgUpload };
+export { initImgUpload, initImgUploadFormSubmit };
