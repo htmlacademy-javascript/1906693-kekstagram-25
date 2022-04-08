@@ -1,3 +1,5 @@
+import { debounce } from './utils/debounce.js';
+
 const similarImagesBlock = document.querySelector('.pictures');
 const similarImagesTemplate = document.querySelector('#picture').content.querySelector('.picture');
 const imgFilters = document.querySelector('.img-filters');
@@ -27,30 +29,64 @@ const createPreviews = (images) => {
 };
 
 const showDefaultImages = (cb) => {
-  defaultButton.addEventListener('click', () => {
-    defaultButton.classList.add('img-filters__button--active');
-    randomButton.classList.remove('img-filters__button--active');
-    discussedButton.classList.remove('img-filters__button--active');
-    cb();
-  });
+  defaultButton.classList.add('img-filters__button--active');
+  randomButton.classList.remove('img-filters__button--active');
+  discussedButton.classList.remove('img-filters__button--active');
+  cb();
 };
 
 const showRandomImages = (cb) => {
-  randomButton.addEventListener('click', () => {
-    defaultButton.classList.remove('img-filters__button--active');
-    randomButton.classList.add('img-filters__button--active');
-    discussedButton.classList.remove('img-filters__button--active');
-    cb();
-  });
+  defaultButton.classList.remove('img-filters__button--active');
+  randomButton.classList.add('img-filters__button--active');
+  discussedButton.classList.remove('img-filters__button--active');
+  cb();
 };
 
 const showDiscussedImages = (cb) => {
+  defaultButton.classList.remove('img-filters__button--active');
+  randomButton.classList.remove('img-filters__button--active');
+  discussedButton.classList.add('img-filters__button--active');
+  cb();
+};
+
+const initImagesFilters = (images) => {
+  createPreviews(images);
+
+  defaultButton.addEventListener('click', () => {
+    showDefaultImages(debounce(() =>
+      createPreviews(images)
+    ));
+  });
+
+  randomButton.addEventListener('click', () => {
+    showRandomImages(debounce(() => {
+      const randomImages = images.slice();
+      const shuffleArrayImages = (ArrayImages) => {
+        let j, temp;
+        for (let i = ArrayImages.length - 1; i > 0; i--) {
+          j = Math.floor(Math.random()*(i + 1));
+          temp = ArrayImages[j];
+          ArrayImages[j] = ArrayImages[i];
+          ArrayImages[i] = temp;
+        }
+        return ArrayImages;
+      };
+      const randomArrayImages = shuffleArrayImages(randomImages).slice(0, 10);
+      createPreviews(randomArrayImages);
+    }));
+  });
+
   discussedButton.addEventListener('click', () => {
-    defaultButton.classList.remove('img-filters__button--active');
-    randomButton.classList.remove('img-filters__button--active');
-    discussedButton.classList.add('img-filters__button--active');
-    cb();
+    showDiscussedImages(debounce(() => {
+      defaultButton.classList.remove('img-filters__button--active');
+      randomButton.classList.remove('img-filters__button--active');
+      discussedButton.classList.add('img-filters__button--active');
+      const compareCommentsImages = (imageA, imageB) => imageB.comments.length - imageA.comments.length;
+      const discussedImages = images.slice();
+      discussedImages.sort(compareCommentsImages);
+      createPreviews(discussedImages);
+    }));
   });
 };
 
-export { createPreviews, showDefaultImages, showRandomImages, showDiscussedImages };
+export { initImagesFilters };
