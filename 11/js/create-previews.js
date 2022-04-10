@@ -28,65 +28,77 @@ const createPreviews = (images) => {
   imgFilters.classList.remove('img-filters--inactive');
 };
 
-const showDefaultImages = (cb) => {
-  defaultButton.classList.add('img-filters__button--active');
-  randomButton.classList.remove('img-filters__button--active');
-  discussedButton.classList.remove('img-filters__button--active');
-  cb();
+const toggleFilterButtons = (currentButton) => {
+  imgFilters.querySelector('.img-filters__button--active').classList.remove('img-filters__button--active');
+  currentButton.classList.add('img-filters__button--active');
 };
 
-const showRandomImages = (cb) => {
-  defaultButton.classList.remove('img-filters__button--active');
-  randomButton.classList.add('img-filters__button--active');
-  discussedButton.classList.remove('img-filters__button--active');
-  cb();
+const showDefaultImages = () => {
+  const currentButton = defaultButton;
+  toggleFilterButtons(currentButton);
+  defaultButton.removeEventListener('click', showDefaultImages);
+  discussedButton.addEventListener('click', showDiscussedImages);
 };
 
-const showDiscussedImages = (cb) => {
-  defaultButton.classList.remove('img-filters__button--active');
-  randomButton.classList.remove('img-filters__button--active');
-  discussedButton.classList.add('img-filters__button--active');
-  cb();
+const showRandomImages = () => {
+  const currentButton = randomButton;
+  toggleFilterButtons(currentButton);
+  defaultButton.addEventListener('click', showDefaultImages);
+  discussedButton.addEventListener('click', showDiscussedImages);
 };
+
+function showDiscussedImages() {
+  const currentButton = discussedButton;
+  toggleFilterButtons(currentButton);
+  discussedButton.removeEventListener('click', showDiscussedImages);
+  defaultButton.addEventListener('click', showDefaultImages);
+}
 
 const initImagesFilters = (images) => {
   createPreviews(images);
 
-  defaultButton.addEventListener('click', () => {
-    showDefaultImages(debounce(() =>
-      createPreviews(images)
-    ));
+  const debounceShowDiscussedImages = debounce(() => {
+    prepareShowDiscussedImages();
   });
 
-  randomButton.addEventListener('click', () => {
-    showRandomImages(debounce(() => {
-      const randomImages = images.slice();
-      const shuffleArrayImages = (ArrayImages) => {
-        let j, temp;
-        for (let i = ArrayImages.length - 1; i > 0; i--) {
-          j = Math.floor(Math.random()*(i + 1));
-          temp = ArrayImages[j];
-          ArrayImages[j] = ArrayImages[i];
-          ArrayImages[i] = temp;
-        }
-        return ArrayImages;
-      };
-      const randomArrayImages = shuffleArrayImages(randomImages).slice(0, 10);
-      createPreviews(randomArrayImages);
-    }));
+  const debounceShowDefaultImages = debounce(() => {
+    createPreviews(images);
+    defaultButton.removeEventListener('click', debounceShowDefaultImages);
+    discussedButton.addEventListener('click', debounceShowDiscussedImages);
   });
 
-  discussedButton.addEventListener('click', () => {
-    showDiscussedImages(debounce(() => {
-      defaultButton.classList.remove('img-filters__button--active');
-      randomButton.classList.remove('img-filters__button--active');
-      discussedButton.classList.add('img-filters__button--active');
-      const compareCommentsImages = (imageA, imageB) => imageB.comments.length - imageA.comments.length;
-      const discussedImages = images.slice();
-      discussedImages.sort(compareCommentsImages);
-      createPreviews(discussedImages);
-    }));
+  const debounceShowRandomImages = debounce(() => {
+    const randomImages = images.slice();
+    const shuffleImagesArray = (imagesArray) => {
+      let j, temp;
+      for (let i = imagesArray.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random()*(i + 1));
+        temp = imagesArray[j];
+        imagesArray[j] = imagesArray[i];
+        imagesArray[i] = temp;
+      }
+      return imagesArray;
+    };
+    const randomImagesArray = shuffleImagesArray(randomImages).slice(0, 10);
+    createPreviews(randomImagesArray);
+
+    defaultButton.addEventListener('click', debounceShowDefaultImages);
+    discussedButton.addEventListener('click', debounceShowDiscussedImages);
   });
+
+  function prepareShowDiscussedImages() {
+    const compareCommentsImages = (imageA, imageB) => imageB.comments.length - imageA.comments.length;
+    const discussedImages = images.slice();
+    discussedImages.sort(compareCommentsImages);
+    createPreviews(discussedImages);
+    defaultButton.addEventListener('click', debounceShowDefaultImages);
+    discussedButton.removeEventListener('click', debounceShowDiscussedImages);
+  }
+
+  randomButton.addEventListener('click', showRandomImages);
+  discussedButton.addEventListener('click', showDiscussedImages);
+  randomButton.addEventListener('click', debounceShowRandomImages);
+  discussedButton.addEventListener('click', debounceShowDiscussedImages);
 };
 
 export { initImagesFilters };
