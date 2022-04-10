@@ -34,18 +34,15 @@ const toggleFilterButtons = (currentButton) => {
 };
 
 const initImagesFilters = (images) => {
-  let currentButton;
   createPreviews(images);
 
   const debounceShowDefaultImages = debounce(() => {
-    currentButton = defaultButton;
-    toggleFilterButtons(currentButton);
+    toggleFilterButtons(defaultButton);
     createPreviews(images);
   });
 
   const debounceShowRandomImages = debounce(() => {
-    currentButton = randomButton;
-    toggleFilterButtons(currentButton);
+    toggleFilterButtons(randomButton);
     const randomImages = images.slice();
     const shuffleImagesArray = (imagesArray) => {
       let j, temp;
@@ -62,8 +59,7 @@ const initImagesFilters = (images) => {
   });
 
   const debounceShowDiscussedImages = debounce(() => {
-    currentButton = discussedButton;
-    toggleFilterButtons(currentButton);
+    toggleFilterButtons(discussedButton);
     const compareCommentsImages = (imageA, imageB) => imageB.comments.length - imageA.comments.length;
     const discussedImages = images.slice();
     discussedImages.sort(compareCommentsImages);
