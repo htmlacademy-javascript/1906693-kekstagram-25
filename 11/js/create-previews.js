@@ -33,41 +33,19 @@ const toggleFilterButtons = (currentButton) => {
   currentButton.classList.add('img-filters__button--active');
 };
 
-const showDefaultImages = () => {
-  const currentButton = defaultButton;
-  toggleFilterButtons(currentButton);
-  defaultButton.removeEventListener('click', showDefaultImages);
-  discussedButton.addEventListener('click', showDiscussedImages);
-};
-
-const showRandomImages = () => {
-  const currentButton = randomButton;
-  toggleFilterButtons(currentButton);
-  defaultButton.addEventListener('click', showDefaultImages);
-  discussedButton.addEventListener('click', showDiscussedImages);
-};
-
-function showDiscussedImages() {
-  const currentButton = discussedButton;
-  toggleFilterButtons(currentButton);
-  discussedButton.removeEventListener('click', showDiscussedImages);
-  defaultButton.addEventListener('click', showDefaultImages);
-}
-
 const initImagesFilters = (images) => {
+  let currentButton;
   createPreviews(images);
 
-  const debounceShowDiscussedImages = debounce(() => {
-    prepareShowDiscussedImages();
-  });
-
   const debounceShowDefaultImages = debounce(() => {
+    currentButton = defaultButton;
+    toggleFilterButtons(currentButton);
     createPreviews(images);
-    defaultButton.removeEventListener('click', debounceShowDefaultImages);
-    discussedButton.addEventListener('click', debounceShowDiscussedImages);
   });
 
   const debounceShowRandomImages = debounce(() => {
+    currentButton = randomButton;
+    toggleFilterButtons(currentButton);
     const randomImages = images.slice();
     const shuffleImagesArray = (imagesArray) => {
       let j, temp;
@@ -81,22 +59,18 @@ const initImagesFilters = (images) => {
     };
     const randomImagesArray = shuffleImagesArray(randomImages).slice(0, 10);
     createPreviews(randomImagesArray);
-
-    defaultButton.addEventListener('click', debounceShowDefaultImages);
-    discussedButton.addEventListener('click', debounceShowDiscussedImages);
   });
 
-  function prepareShowDiscussedImages() {
+  const debounceShowDiscussedImages = debounce(() => {
+    currentButton = discussedButton;
+    toggleFilterButtons(currentButton);
     const compareCommentsImages = (imageA, imageB) => imageB.comments.length - imageA.comments.length;
     const discussedImages = images.slice();
     discussedImages.sort(compareCommentsImages);
     createPreviews(discussedImages);
-    defaultButton.addEventListener('click', debounceShowDefaultImages);
-    discussedButton.removeEventListener('click', debounceShowDiscussedImages);
-  }
+  });
 
-  randomButton.addEventListener('click', showRandomImages);
-  discussedButton.addEventListener('click', showDiscussedImages);
+  defaultButton.addEventListener('click', debounceShowDefaultImages);
   randomButton.addEventListener('click', debounceShowRandomImages);
   discussedButton.addEventListener('click', debounceShowDiscussedImages);
 };
