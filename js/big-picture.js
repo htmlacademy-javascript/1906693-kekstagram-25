@@ -57,8 +57,34 @@ const fillBigPicture = (id, images) => {
 };
 
 const fillComments = () => {
-  const socialCommentsElements = bigPicture.querySelectorAll('.social__comment');
   const COMMENT_STEP = 5;
+  const socialCommentsElements = bigPicture.querySelectorAll('.social__comment');
+  let сommentCounter = 0;
+
+  const onCommentsCheck = () => {
+    bigPicture.querySelector('.social__comment-count').innerHTML = `${сommentCounter} из <span class="comments-count">${socialCommentsElements.length}</span> комментариев`;
+    сommentCounter += COMMENT_STEP;
+    if (сommentCounter <= socialCommentsElements.length) {
+      for (let i = сommentCounter - COMMENT_STEP; i < сommentCounter; i++) {
+        socialCommentsElements[i].style.display = '';
+      }
+      bigPicture.querySelector('.social__comment-count').innerHTML = `${сommentCounter} из <span class="comments-count">${socialCommentsElements.length}</span> комментариев`;
+    }
+
+    if (сommentCounter >= socialCommentsElements.length) {
+
+      for (let i = сommentCounter - COMMENT_STEP; i < socialCommentsElements.length; i++) {
+        socialCommentsElements[i].style.display = '';
+      }
+
+      bigPicture.querySelector('.comments-loader').classList.add('hidden');
+      bigPicture.querySelector('.comments-loader').removeEventListener('click', onCommentsCheck);
+    }
+
+    if (сommentCounter > socialCommentsElements.length) {
+      bigPicture.querySelector('.social__comment-count').innerHTML = `${socialCommentsElements.length} из <span class="comments-count">${socialCommentsElements.length}</span> комментариев`;
+    }
+  };
 
   for (let i = COMMENT_STEP; i < socialCommentsElements.length; i++) {
     socialCommentsElements[i].style.display = 'none';
@@ -68,35 +94,27 @@ const fillComments = () => {
     bigPicture.querySelector('.comments-loader').classList.add('hidden');
     bigPicture.querySelector('.social__comment-count').innerHTML = `${socialCommentsElements.length} из <span class="comments-count">${socialCommentsElements.length}</span> комментариев`;
   } else {
-    let сommentCounter = COMMENT_STEP;
-    bigPicture.querySelector('.social__comment-count').innerHTML = `${сommentCounter} из <span class="comments-count">${socialCommentsElements.length}</span> комментариев`;
-
-    const commentCheck = () => {
-      сommentCounter += COMMENT_STEP;
-      if (сommentCounter <= socialCommentsElements.length) {
-        for (let i = сommentCounter - COMMENT_STEP; i < сommentCounter; i++) {
-          socialCommentsElements[i].style.display = '';
-        }
-        bigPicture.querySelector('.social__comment-count').innerHTML = `${сommentCounter} из <span class="comments-count">${socialCommentsElements.length}</span> комментариев`;
-      }
-
-      if (сommentCounter >= socialCommentsElements.length) {
-
-        for (let i = сommentCounter - COMMENT_STEP; i < socialCommentsElements.length; i++) {
-          socialCommentsElements[i].style.display = '';
-        }
-
-        bigPicture.querySelector('.comments-loader').classList.add('hidden');
-        bigPicture.querySelector('.comments-loader').removeEventListener('click', commentCheck);
-      }
-
-      if (сommentCounter > socialCommentsElements.length) {
-        bigPicture.querySelector('.social__comment-count').innerHTML = `${socialCommentsElements.length} из <span class="comments-count">${socialCommentsElements.length}</span> комментариев`;
-      }
-    };
-
-    bigPicture.querySelector('.comments-loader').addEventListener('click', commentCheck);
+    onCommentsCheck();
+    bigPicture.querySelector('.comments-loader').addEventListener('click', onCommentsCheck);
   }
+
+  const onCheckCommentBigPictureCancelClick = () => {
+    bigPicture.querySelector('.big-picture__cancel').removeEventListener('click', onCheckCommentBigPictureCancelClick);
+    document.removeEventListener('keydown', onCheckCommentBigPictureEscKeydown);
+    bigPicture.querySelector('.comments-loader').removeEventListener('click', onCommentsCheck);
+  };
+
+  function onCheckCommentBigPictureEscKeydown(evt) {
+    if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      document.removeEventListener('keydown', onCheckCommentBigPictureEscKeydown);
+      bigPicture.querySelector('.big-picture__cancel').removeEventListener('click', onCheckCommentBigPictureCancelClick);
+      bigPicture.querySelector('.comments-loader').removeEventListener('click', onCommentsCheck);
+    }
+  }
+
+  bigPicture.querySelector('.big-picture__cancel').addEventListener('click', onCheckCommentBigPictureCancelClick);
+  document.addEventListener('keydown', onCheckCommentBigPictureEscKeydown);
 };
 
 const initBigPicture = (images) => {
