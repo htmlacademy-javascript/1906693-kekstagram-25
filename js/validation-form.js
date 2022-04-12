@@ -123,6 +123,7 @@ const onUploadPictureCancel = () => {
   imgUploadPreview.className = '';
   effectsList.removeEventListener('change', onSelectionEffectChange);
   imgUploadForm.removeEventListener('submit', onImgUploadFormSubmit);
+  imgUploadPreview.src = '';
 };
 
 function onUploadPictureEscKeydown(evt) {
@@ -140,6 +141,7 @@ function onUploadPictureEscKeydown(evt) {
     effectsList.removeEventListener('change', onSelectionEffectChange);
     document.getElementById('effect-none').checked = true;
     imgUploadForm.removeEventListener('submit', onImgUploadFormSubmit);
+    imgUploadPreview.src = '';
   }
 }
 
@@ -211,6 +213,17 @@ const initFormValidation = () => {
     return true;
   },
   'Нельзя указать больше пяти хэш-тегов');
+
+  pristine.addValidator(textHashtagsNewImage, () => {
+    const lengthTextHashtags = textHashtagsNewImage.value.split(' ');
+    for (const textHashtags of lengthTextHashtags) {
+      if (textHashtags.length > 20) {
+        return false;
+      }
+    }
+    return true;
+  },
+  'Максимальная длина одного хэш-тега 20 символов, включая решётку');
 };
 
 const initImgUpload = () => {

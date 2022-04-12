@@ -36,12 +36,12 @@ const toggleFilterButtons = (currentButton) => {
 const initImagesFilters = (images) => {
   createPreviews(images);
 
-  const debounceShowDefaultImages = debounce(() => {
+  const onShowDefaultImagesDebounce = debounce(() => {
     toggleFilterButtons(defaultButton);
     createPreviews(images);
   });
 
-  const debounceShowRandomImages = debounce(() => {
+  const onShowRandomImagesDebounce = debounce(() => {
     toggleFilterButtons(randomButton);
     const randomImages = images.slice();
     const shuffleImagesArray = (imagesArray) => {
@@ -58,7 +58,7 @@ const initImagesFilters = (images) => {
     createPreviews(randomImagesArray);
   });
 
-  const debounceShowDiscussedImages = debounce(() => {
+  const onShowDiscussedImagesDebounce = debounce(() => {
     toggleFilterButtons(discussedButton);
     const compareCommentsImages = (imageA, imageB) => imageB.comments.length - imageA.comments.length;
     const discussedImages = images.slice();
@@ -66,9 +66,9 @@ const initImagesFilters = (images) => {
     createPreviews(discussedImages);
   });
 
-  defaultButton.addEventListener('click', debounceShowDefaultImages);
-  randomButton.addEventListener('click', debounceShowRandomImages);
-  discussedButton.addEventListener('click', debounceShowDiscussedImages);
+  defaultButton.addEventListener('click', onShowDefaultImagesDebounce);
+  randomButton.addEventListener('click', onShowRandomImagesDebounce);
+  discussedButton.addEventListener('click', onShowDiscussedImagesDebounce);
 };
 
 export { initImagesFilters };

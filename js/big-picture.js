@@ -2,6 +2,7 @@ import { isEscapeKey } from './utils/is-escape-key.js';
 
 const pictures = document.querySelector('.pictures');
 const bigPicture = document.querySelector('.big-picture');
+const COMMENT_STEP = 5;
 
 const closeBigPicture = () => {
   bigPicture.classList.add('hidden');
@@ -57,7 +58,6 @@ const fillBigPicture = (id, images) => {
 };
 
 const fillComments = () => {
-  const COMMENT_STEP = 5;
   const socialCommentsElements = bigPicture.querySelectorAll('.social__comment');
   let сommentCounter = 0;
 
