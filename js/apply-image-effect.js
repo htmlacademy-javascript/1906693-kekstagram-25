@@ -6,6 +6,7 @@ const imgUploadPreview = imgUploadOverlay.querySelector('.img-upload__preview').
 const effectLevelValue= imgUploadOverlay.querySelector('.effect-level__value');
 const effectLevelSlider = imgUploadOverlay.querySelector('.effect-level__slider');
 const effectsList = imgUploadOverlay.querySelector('.effects__list');
+const effectLevel = imgUploadOverlay.querySelector('.effect-level');
 
 const initSelectionEffectChange = (evt) => {
   imgUploadPreview.removeAttribute('style');
@@ -53,9 +54,9 @@ const initCheckSelectionEffectChange = (evt) => {
   if (evt.target.matches('input[type="radio"]')) {
 
     if (imgUploadPreview.className === '') {
-      effectLevelSlider.classList.add('hidden');
+      effectLevel.classList.add('hidden');
     } else {
-      effectLevelSlider.classList.remove('hidden');
+      effectLevel.classList.remove('hidden');
     }
 
     if (imgUploadPreview.className === 'effects__preview--chrome' ||
@@ -114,7 +115,7 @@ const onSelectionEffectChange = (evt) => {
 };
 
 const initImageEffect = () => {
-  effectLevelSlider.classList.add('hidden');
+  effectLevel.classList.add('hidden');
   initUiSlider();
   effectsList.addEventListener('change', onSelectionEffectChange);
 };

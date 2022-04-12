@@ -7,7 +7,6 @@ const fileChooser = document.querySelector('.img-upload__start input[type=file]'
 const imgUploadPreview = document.querySelector('.img-upload__preview').querySelector('img');
 
 const onInputFileDelete = () => {
-  imgUploadPreview.src = '';
   document.querySelector('.img-upload__cancel').removeEventListener('click', onInputFileDelete);
   document.removeEventListener('keydown', onInputFileEscKeydownDelete);
 };
@@ -32,7 +31,6 @@ const uploadFile = () => {
 function onInputFileEscKeydownDelete(evt) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
-    imgUploadPreview.src = '';
     document.querySelector('.img-upload__cancel').removeEventListener('click', onInputFileDelete);
     document.removeEventListener('keydown', onInputFileEscKeydownDelete);
   }
