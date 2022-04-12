@@ -1,20 +1,20 @@
 import { isEscapeKey } from './utils/is-escape-key.js';
 import { initResizingImage, deleteResizingImage, scaleControlDefaultValue } from './resizing-image.js';
-import { initImageEffect, initSelectionEffect, checkSelectionEffect } from './apply-image-effect.js';
+import { initImageEffect, onSelectionEffectChange } from './apply-image-effect.js';
 import { sendData } from './send-data-api.js';
+import { onInputFileDelete, onInputFileEscKeydownDelete } from './upload-file.js';
 
 const imgUpload = document.querySelector('.img-upload');
-const imgUploadOverlay = imgUpload.querySelector('.img-upload__overlay');
-const uploadFileNewImage = imgUpload.querySelector('#upload-file');
 const imgUploadForm = imgUpload.querySelector('.img-upload__form');
+const imgUploadOverlay = imgUpload.querySelector('.img-upload__overlay');
 const textHashtagsNewImage = imgUploadOverlay.querySelector('.text__hashtags');
 const textDescriptionNewImage = imgUploadOverlay.querySelector('.text__description');
 const re = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
-const scaleControlValue = document.querySelector('.scale__control--value');
-const effectsList = document.querySelector('.effects__list');
-const imgUploadPreview = document.querySelector('.img-upload__preview').querySelector('img');
-const effectLevelSlider = document.querySelector('.effect-level__slider');
-const submitButton = document.querySelector('.img-upload__submit');
+const scaleControlValue = imgUploadOverlay.querySelector('.scale__control--value');
+const effectsList = imgUploadOverlay.querySelector('.effects__list');
+const imgUploadPreview = imgUploadOverlay.querySelector('.img-upload__preview').querySelector('img');
+const effectLevelSlider = imgUploadOverlay.querySelector('.effect-level__slider');
+const submitButton = imgUploadOverlay.querySelector('.img-upload__submit');
 const success = document.querySelector('#success').content.querySelector('.success');
 const successButton = document.querySelector('#success').content.querySelector('.success__button');
 const successInner = document.querySelector('#success').content.querySelector('.success__inner');
@@ -22,18 +22,18 @@ const error = document.querySelector('#error').content.querySelector('.error');
 const errorButton = document.querySelector('#error').content.querySelector('.error__button');
 const errorInner = document.querySelector('#error').content.querySelector('.error__inner');
 
-const onCloseSuccessButton = () => {
+const onSuccessButtonClose = () => {
   success.classList.add('hidden');
-  successButton.removeEventListener('click', onCloseSuccessButton);
-  document.removeEventListener('click', onCloseSuccessClickOutside);
+  successButton.removeEventListener('click', onSuccessButtonClose);
+  document.removeEventListener('click', onSuccessOutsideClickClose);
   document.removeEventListener('keydown', onImgUploadEscKeydown);
 };
 
-function onCloseSuccessClickOutside(evt) {
+function onSuccessOutsideClickClose(evt) {
   if (!successInner.contains(evt.target)) {
     success.classList.add('hidden');
-    successButton.removeEventListener('click', onCloseSuccessButton);
-    document.removeEventListener('click', onCloseSuccessClickOutside);
+    successButton.removeEventListener('click', onSuccessButtonClose);
+    document.removeEventListener('click', onSuccessOutsideClickClose);
     document.removeEventListener('keydown', onImgUploadEscKeydown);
   }
 }
@@ -41,23 +41,23 @@ function onCloseSuccessClickOutside(evt) {
 const initSuccessImgUpload = () => {
   document.removeEventListener('keydown', onUploadPictureEscKeydown);
   document.body.append(success);
-  successButton.addEventListener('click', onCloseSuccessButton);
-  document.addEventListener('click', onCloseSuccessClickOutside);
+  successButton.addEventListener('click', onSuccessButtonClose);
+  document.addEventListener('click', onSuccessOutsideClickClose);
   document.addEventListener('keydown', onImgUploadEscKeydown);
 };
 
-const onCloseErrorButton = () => {
+const onErrorButtonClose = () => {
   error.classList.add('hidden');
-  errorButton.removeEventListener('click', onCloseErrorButton);
-  document.removeEventListener('click', onCloseErrorClickOutside);
+  errorButton.removeEventListener('click', onErrorButtonClose);
+  document.removeEventListener('click', onErrorOutsideClickClose);
   document.removeEventListener('keydown', onImgUploadEscKeydown);
 };
 
-function onCloseErrorClickOutside(evt) {
+function onErrorOutsideClickClose(evt) {
   if (!errorInner.contains(evt.target)) {
     error.classList.add('hidden');
-    errorButton.removeEventListener('click', onCloseErrorButton);
-    document.removeEventListener('click', onCloseErrorClickOutside);
+    errorButton.removeEventListener('click', onErrorButtonClose);
+    document.removeEventListener('click', onErrorOutsideClickClose);
     document.removeEventListener('keydown', onImgUploadEscKeydown);
   }
 }
@@ -65,8 +65,8 @@ function onCloseErrorClickOutside(evt) {
 const initErrorImgUpload = () => {
   document.removeEventListener('keydown', onUploadPictureEscKeydown);
   document.body.append(error);
-  errorButton.addEventListener('click', onCloseErrorButton);
-  document.addEventListener('click', onCloseErrorClickOutside);
+  errorButton.addEventListener('click', onErrorButtonClose);
+  document.addEventListener('click', onErrorOutsideClickClose);
   document.addEventListener('keydown', onImgUploadEscKeydown);
 };
 
@@ -75,10 +75,10 @@ function onImgUploadEscKeydown(evt) {
     evt.preventDefault();
     success.classList.add('hidden');
     error.classList.add('hidden');
-    successButton.removeEventListener('click', onCloseSuccessButton);
-    document.removeEventListener('click', onCloseSuccessClickOutside);
-    errorButton.removeEventListener('click', onCloseErrorButton);
-    document.removeEventListener('click', onCloseErrorClickOutside);
+    successButton.removeEventListener('click', onSuccessButtonClose);
+    document.removeEventListener('click', onSuccessOutsideClickClose);
+    errorButton.removeEventListener('click', onErrorButtonClose);
+    document.removeEventListener('click', onErrorOutsideClickClose);
     document.removeEventListener('keydown', onImgUploadEscKeydown);
   }
 }
@@ -121,8 +121,8 @@ const onUploadPictureCancel = () => {
   imgUploadOverlay.querySelector('.img-upload__cancel').removeEventListener('click', onUploadPictureCancel);
   document.removeEventListener('keydown', onUploadPictureEscKeydown);
   imgUploadPreview.className = '';
-  effectsList.removeEventListener('change', initSelectionEffect);
-  effectsList.removeEventListener('change', checkSelectionEffect);
+  effectsList.removeEventListener('change', onSelectionEffectChange);
+  imgUploadForm.removeEventListener('submit', onImgUploadFormSubmit);
 };
 
 function onUploadPictureEscKeydown(evt) {
@@ -137,38 +137,38 @@ function onUploadPictureEscKeydown(evt) {
     imgUploadOverlay.querySelector('.img-upload__cancel').removeEventListener('click', onUploadPictureCancel);
     document.removeEventListener('keydown', onUploadPictureEscKeydown);
     imgUploadPreview.className = '';
-    effectsList.removeEventListener('change', initSelectionEffect);
-    effectsList.removeEventListener('change', checkSelectionEffect);
+    effectsList.removeEventListener('change', onSelectionEffectChange);
     document.getElementById('effect-none').checked = true;
+    imgUploadForm.removeEventListener('submit', onImgUploadFormSubmit);
   }
 }
 
-const initImgUploadFormSubmit = () => {
-  imgUploadForm.addEventListener('submit', (evt) => {
-    evt.preventDefault();
-    const isValid = pristine.validate();
-    if (isValid) {
-      blockSubmitButton();
-      sendData(
-        () => {
-          unblockSubmitButton();
-          onUploadPictureCancel();
-          success.classList.remove('hidden');
-          initSuccessImgUpload();
-          document.getElementById('effect-none').checked = true;
-        },
-        () => {
-          unblockSubmitButton();
-          onUploadPictureCancel();
-          error.classList.remove('hidden');
-          initErrorImgUpload();
-          document.getElementById('effect-none').checked = true;
-        },
-        new FormData(evt.target),
-      );
-    }
-  });
-};
+function onImgUploadFormSubmit(evt) {
+  evt.preventDefault();
+  const isValid = pristine.validate();
+  if (isValid) {
+    blockSubmitButton();
+    sendData(
+      () => {
+        unblockSubmitButton();
+        onUploadPictureCancel();
+        success.classList.remove('hidden');
+        initSuccessImgUpload();
+        document.getElementById('effect-none').checked = true;
+      },
+      () => {
+        unblockSubmitButton();
+        onUploadPictureCancel();
+        error.classList.remove('hidden');
+        initErrorImgUpload();
+        document.getElementById('effect-none').checked = true;
+      },
+      new FormData(evt.target),
+    );
+  }
+  imgUploadOverlay.querySelector('.img-upload__cancel').removeEventListener('click', onInputFileDelete);
+  document.removeEventListener('keydown', onInputFileEscKeydownDelete);
+}
 
 const openImgUpload = () => {
   imgUploadOverlay.classList.remove('hidden');
@@ -214,14 +214,13 @@ const initFormValidation = () => {
 };
 
 const initImgUpload = () => {
-  uploadFileNewImage.addEventListener('click', () => {
-    openImgUpload();
-    scaleControlValue.value = scaleControlDefaultValue;
-    initResizingImage();
-    initImageEffect();
-    initFormValidation();
-    imgUploadOverlay.querySelector('.img-upload__cancel').addEventListener('click', onUploadPictureCancel);
-  });
+  openImgUpload();
+  scaleControlValue.value = scaleControlDefaultValue;
+  initResizingImage();
+  initImageEffect();
+  initFormValidation();
+  imgUploadOverlay.querySelector('.img-upload__cancel').addEventListener('click', onUploadPictureCancel);
+  imgUploadForm.addEventListener('submit', onImgUploadFormSubmit);
 };
 
-export { initImgUpload, initImgUploadFormSubmit };
+export { initImgUpload };

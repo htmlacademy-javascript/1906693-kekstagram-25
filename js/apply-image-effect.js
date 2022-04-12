@@ -1,12 +1,13 @@
 import { scaleControlDefaultValue } from './resizing-image.js';
 
-const effectsList = document.querySelector('.effects__list');
-const effectLevelSlider = document.querySelector('.effect-level__slider');
-const effectLevelValue= document.querySelector('.effect-level__value');
-const imgUploadPreview = document.querySelector('.img-upload__preview').querySelector('img');
-const scaleControlValue = document.querySelector('.scale__control--value');
+const imgUploadOverlay = document.querySelector('.img-upload__overlay');
+const scaleControlValue = imgUploadOverlay.querySelector('.scale__control--value');
+const imgUploadPreview = imgUploadOverlay.querySelector('.img-upload__preview').querySelector('img');
+const effectLevelValue= imgUploadOverlay.querySelector('.effect-level__value');
+const effectLevelSlider = imgUploadOverlay.querySelector('.effect-level__slider');
+const effectsList = imgUploadOverlay.querySelector('.effects__list');
 
-const initSelectionEffect = (evt) => {
+const initSelectionEffectChange = (evt) => {
   imgUploadPreview.removeAttribute('style');
   if (evt.target.matches('input[type="radio"]')) {
     imgUploadPreview.className = '';
@@ -48,7 +49,7 @@ const initUiSlider = () => {
   });
 };
 
-const checkSelectionEffect = (evt) => {
+const initCheckSelectionEffectChange = (evt) => {
   if (evt.target.matches('input[type="radio"]')) {
 
     if (imgUploadPreview.className === '') {
@@ -107,11 +108,15 @@ const checkSelectionEffect = (evt) => {
   }
 };
 
-const initImageEffect = () => {
-  effectLevelSlider.classList.add('hidden');
-  effectsList.addEventListener('change', initSelectionEffect);
-  initUiSlider();
-  effectsList.addEventListener('change', checkSelectionEffect);
+const onSelectionEffectChange = (evt) => {
+  initSelectionEffectChange(evt);
+  initCheckSelectionEffectChange(evt);
 };
 
-export { initImageEffect, initSelectionEffect, checkSelectionEffect };
+const initImageEffect = () => {
+  effectLevelSlider.classList.add('hidden');
+  initUiSlider();
+  effectsList.addEventListener('change', onSelectionEffectChange);
+};
+
+export { initImageEffect, onSelectionEffectChange };

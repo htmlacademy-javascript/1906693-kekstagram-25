@@ -13,14 +13,14 @@ const scaleControl = {
 
 const scaleControlDefaultValue =`${scaleControl.defaultValue}%`;
 
-const changeScaleMin = () => {
+const onScaleMinChange = () => {
   if (parseInt(scaleControlValue.value, 10) > scaleControl.minValue) {
     scaleControlValue.value = `${parseInt(scaleControlValue.value, 10) - scaleControl.step}%`;
     imgUploadPreview.style.transform = `scale(${parseInt(scaleControlValue.value, 10)/100})`;
   }
 };
 
-const changeScaleMax = () => {
+const onScaleMaxChange = () => {
   if (parseInt(scaleControlValue.value, 10) < scaleControl.maxValue) {
     scaleControlValue.value = `${parseInt(scaleControlValue.value, 10) + scaleControl.step}%`;
     imgUploadPreview.style.transform = `scale(${parseInt(scaleControlValue.value, 10)/100})`;
@@ -38,14 +38,14 @@ const initResizingImage = () => {
   } else {
     imgUploadPreview.style.transform = `scale(${scaleControl.defaultValue/100})`;
   }
-  scaleControlSmaller.addEventListener('click', changeScaleMin);
-  scaleControlBigger.addEventListener('click', changeScaleMax);
+  scaleControlSmaller.addEventListener('click', onScaleMinChange);
+  scaleControlBigger.addEventListener('click', onScaleMaxChange);
 };
 
 const deleteResizingImage = () => {
   imgUploadPreview.removeAttribute('style');
-  scaleControlSmaller.removeEventListener('click', changeScaleMin);
-  scaleControlBigger.removeEventListener('click', changeScaleMax);
+  scaleControlSmaller.removeEventListener('click', onScaleMinChange);
+  scaleControlBigger.removeEventListener('click', onScaleMaxChange);
 };
 
 export { initResizingImage, deleteResizingImage, scaleControlDefaultValue };
