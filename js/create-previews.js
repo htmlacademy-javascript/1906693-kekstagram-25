@@ -36,18 +36,12 @@ const toggleFilterButtons = (currentButton) => {
 const initImagesFilters = (images) => {
   createPreviews(images);
 
-  const onShowDiscussedImagesDebounce = debounce(() => {
-    prepareShowDiscussedImages();
-  });
-
-  const onShowDefaultImagesDebounce = debounce(() => {
+  const debounceShowDefaultImages = debounce(() => {
     toggleFilterButtons(defaultButton);
     createPreviews(images);
-    defaultButton.removeEventListener('click', onShowDefaultImagesDebounce);
-    discussedButton.addEventListener('click', onShowDiscussedImagesDebounce);
   });
 
-  const onShowRandomImagesDebounce = debounce(() => {
+  const debounceShowRandomImages = debounce(() => {
     toggleFilterButtons(randomButton);
     const randomImages = images.slice();
     const shuffleImagesArray = (imagesArray) => {
@@ -62,22 +56,19 @@ const initImagesFilters = (images) => {
     };
     const randomImagesArray = shuffleImagesArray(randomImages).slice(0, 10);
     createPreviews(randomImagesArray);
-    defaultButton.addEventListener('click', onShowDefaultImagesDebounce);
-    discussedButton.addEventListener('click', onShowDiscussedImagesDebounce);
   });
 
-  function prepareShowDiscussedImages () {
+  const debounceShowDiscussedImages = debounce(() => {
     toggleFilterButtons(discussedButton);
     const compareCommentsImages = (imageA, imageB) => imageB.comments.length - imageA.comments.length;
     const discussedImages = images.slice();
     discussedImages.sort(compareCommentsImages);
     createPreviews(discussedImages);
-    discussedButton.removeEventListener('click', onShowDiscussedImagesDebounce);
-    defaultButton.addEventListener('click', onShowDefaultImagesDebounce);
-  }
+  });
 
-  randomButton.addEventListener('click', onShowRandomImagesDebounce);
-  discussedButton.addEventListener('click', onShowDiscussedImagesDebounce);
+  defaultButton.addEventListener('click', debounceShowDefaultImages);
+  randomButton.addEventListener('click', debounceShowRandomImages);
+  discussedButton.addEventListener('click', debounceShowDiscussedImages);
 };
 
 export { initImagesFilters };

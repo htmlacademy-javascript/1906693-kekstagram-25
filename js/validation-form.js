@@ -1,6 +1,6 @@
 import { isEscapeKey } from './utils/is-escape-key.js';
 import { initResizingImage, deleteResizingImage, scaleControlDefaultValue } from './resizing-image.js';
-import { initImageEffect, onSelectionEffectChange, onCheckSelectionEffectChange } from './apply-image-effect.js';
+import { initImageEffect, onSelectionEffectChange } from './apply-image-effect.js';
 import { sendData } from './send-data-api.js';
 import { onInputFileDelete, onInputFileEscKeydownDelete } from './upload-file.js';
 
@@ -122,7 +122,6 @@ const onUploadPictureCancel = () => {
   document.removeEventListener('keydown', onUploadPictureEscKeydown);
   imgUploadPreview.className = '';
   effectsList.removeEventListener('change', onSelectionEffectChange);
-  effectsList.removeEventListener('change', onCheckSelectionEffectChange);
   imgUploadForm.removeEventListener('submit', onImgUploadFormSubmit);
 };
 
@@ -139,7 +138,6 @@ function onUploadPictureEscKeydown(evt) {
     document.removeEventListener('keydown', onUploadPictureEscKeydown);
     imgUploadPreview.className = '';
     effectsList.removeEventListener('change', onSelectionEffectChange);
-    effectsList.removeEventListener('change', onCheckSelectionEffectChange);
     document.getElementById('effect-none').checked = true;
     imgUploadForm.removeEventListener('submit', onImgUploadFormSubmit);
   }
